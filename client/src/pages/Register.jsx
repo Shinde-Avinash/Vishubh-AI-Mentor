@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+    const [formData, setFormData] = useState({ name: "", email: "", password: "" });
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -13,55 +13,93 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/auth/register', formData);
-            navigate('/login');
+            await axios.post("http://localhost:5000/api/auth/register", formData);
+            navigate("/login");
         } catch (error) {
-            console.error('Registration failed:', error);
-            alert('Registration failed');
+            alert("Registration failed");
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
-            <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-                <h2 className="mb-6 text-3xl font-bold text-center text-gray-800">Register</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                    <button
-                        type="submit"
-                        className="w-full py-2 font-bold text-white transition duration-300 bg-blue-600 rounded-lg hover:bg-blue-700"
-                    >
-                        Register
-                    </button>
-                </form>
-                <p className="mt-4 text-center text-gray-600">
-                    Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
-                </p>
+        <>
+            <style>{`
+                * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial; }
+
+                html, body {
+                    height: 100%;
+                    background: #1a1d29;
+                    overflow: hidden;
+                }
+
+                .container {
+                    height: 100vh;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px;
+                }
+
+                .card {
+                    width: 100%;
+                    max-width: 420px;
+                    background: #23262f;
+                    padding: 30px;
+                    border-radius: 12px;
+                    border: 1px solid #2d3038;
+                    text-align: center;
+                }
+
+                h1 { color: #e5e7eb; margin-bottom: 30px; }
+                h2 { color: #e5e7eb; margin-bottom: 20px; }
+
+                input {
+                    width: 100%;
+                    padding: 12px;
+                    margin-bottom: 18px;
+                    background: #2d3038;
+                    border: 1px solid #3d4048;
+                    color: white;
+                    border-radius: 8px;
+                }
+
+                button {
+                    width: 100%;
+                    padding: 12px;
+                    background: #10b981;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+                
+                button:hover { background: #059669; }
+
+                p { color: #9ca3af; margin-top: 15px; }
+                a { color: #10b981; text-decoration: none; }
+                a:hover { text-decoration: underline; }
+            `}</style>
+
+            <div className="container">
+                <div className="card">
+                    <h1>Register Account</h1>
+                    <h2>Create Account</h2>
+
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
+                        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+                        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+
+                        <button type="submit">Register</button>
+                    </form>
+
+                    <p>
+                        Already have an account? <Link to="/login">Login</Link>
+                    </p>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

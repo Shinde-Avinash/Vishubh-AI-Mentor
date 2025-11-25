@@ -1,89 +1,247 @@
-import { useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const Chat = () => {
     const { personName } = useParams();
     const location = useLocation();
-    const field = location.state?.field || 'General';
+    const field = location.state?.field || "General";
+
     const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
+    const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
     const sendMessage = async () => {
         if (!input.trim()) return;
 
-        const newMessages = [...messages, { role: 'user', text: input }];
+        const newMessages = [...messages, { role: "user", text: input }];
         setMessages(newMessages);
-        setInput('');
+        setInput("");
         setLoading(true);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/chat', {
+            const res = await axios.post("http://localhost:5000/api/chat", {
                 message: input,
                 personName: decodeURIComponent(personName),
-                field
+                field,
             });
 
-            setMessages([...newMessages, { role: 'ai', text: res.data.reply }]);
+            setMessages([
+                ...newMessages,
+                { role: "ai", text: res.data.reply },
+            ]);
         } catch (error) {
-            console.error('Chat error:', error);
-            setMessages([...newMessages, { role: 'ai', text: 'Sorry, I am unable to respond right now.' }]);
+            setMessages([
+                ...newMessages,
+                { role: "ai", text: "Sorry, I am unable to respond right now." },
+            ]);
         }
         setLoading(false);
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            <div className="p-4 text-white bg-indigo-600 shadow-md">
-                <h1 className="text-2xl font-bold text-center">Chat with {personName}</h1>
-            </div>
-            <div className="flex-1 p-4 overflow-y-auto">
-                <div className="max-w-3xl mx-auto space-y-4">
-                    {messages.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
+        <>
+            <style>{`
+                body {
+                    margin: 0;
+                    background: #0d0f12;
+                    font-family: 'Inter', sans-serif;
+                    color: #e5e7eb;
+                }
+
+                .chat-container {
+                    height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    background: #0d0f12;
+                }
+
+                .chat-header {
+                    background: #111418;
+                    padding: 18px;
+                    font-size: 20px;
+                    font-weight: bold;
+                    text-align: center;
+                    border-bottom: 1px solid #1e1f22;
+                }
+
+                .chat-subtitle {
+                    margin-top: 4px;
+                    font-size: 13px;
+                    opacity: 0.7;
+                    font-weight: 400;
+                }
+
+                .chat-body {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 20px;
+                }
+
+                .chat-wrapper {
+                    max-width: 800px;
+                    margin: auto;
+                }
+
+                .msg-row {
+                    display: flex;
+                    margin-bottom: 14px;
+                }
+
+                .msg-user {
+                    justify-content: flex-end;
+                }
+
+                .msg-ai {
+                    justify-content: flex-start;
+                }
+
+                .bubble {
+                    max-width: 75%;
+                    padding: 14px 18px;
+                    border-radius: 14px;
+                    font-size: 15px;
+                    line-height: 1.5;
+                    animation: fadeIn 0.2s ease-in-out;
+                }
+
+                .bubble-user {
+                    background: #2563eb;
+                    color: white;
+                    border-bottom-right-radius: 0;
+                }
+
+                .bubble-ai {
+                    background: rgba(255, 255, 255, 0.06);
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    backdrop-filter: blur(6px);
+                    color: #e2e8f0;
+                    border-bottom-left-radius: 0;
+                }
+
+                .typing {
+                    background: rgba(255, 255, 255, 0.06);
+                    padding: 12px 18px;
+                    border-radius: 14px;
+                    border-bottom-left-radius: 0;
+                    font-size: 14px;
+                    color: #9ca3af;
+                    width: fit-content;
+                    animation: fadeIn 0.3s ease-in-out;
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(4px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .chat-footer {
+                    padding: 12px;
+                    background: #111418;
+                    border-top: 1px solid #1e1f22;
+                }
+
+                .footer-inner {
+                    max-width: 800px;
+                    margin: auto;
+                    display: flex;
+                    gap: 10px;
+                }
+
+                .input-box {
+                    flex: 1;
+                    padding: 14px 18px;
+                    border-radius: 30px;
+                    border: 1px solid #2a2d31;
+                    font-size: 15px;
+                    background: #0f1215;
+                    color: white;
+                }
+
+                .input-box::placeholder {
+                    color: #6b7280;
+                }
+
+                .send-btn {
+                    background: #2563eb;
+                    border: none;
+                    padding: 12px 26px;
+                    border-radius: 30px;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.2s;
+                }
+
+                .send-btn:hover {
+                    background: #1d4ed8;
+                }
+
+                .send-btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                @media (max-width: 600px) {
+                    .bubble {
+                        max-width: 90%;
+                    }
+                }
+            `}</style>
+
+            <div className="chat-container">
+
+                <div className="chat-header">
+                    Chat with {personName}
+                    <div className="chat-subtitle">{field}</div>
+                </div>
+
+                <div className="chat-body">
+                    <div className="chat-wrapper">
+                        {messages.map((msg, i) => (
                             <div
-                                className={`max-w-xs md:max-w-md p-3 rounded-lg shadow ${msg.role === 'user'
-                                        ? 'bg-blue-500 text-white rounded-br-none'
-                                        : 'bg-white text-gray-800 rounded-bl-none'
-                                    }`}
+                                key={i}
+                                className={`msg-row ${msg.role === "user" ? "msg-user" : "msg-ai"}`}
                             >
-                                {msg.text}
+                                <div
+                                    className={`bubble ${msg.role === "user" ? "bubble-user" : "bubble-ai"
+                                        }`}
+                                >
+                                    {msg.text}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    {loading && (
-                        <div className="flex justify-start">
-                            <div className="p-3 text-gray-500 bg-white rounded-lg shadow rounded-bl-none">
-                                Typing...
+                        ))}
+
+                        {loading && (
+                            <div className="msg-row msg-ai">
+                                <div className="typing">Typing…</div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
-            <div className="p-4 bg-white shadow-inner">
-                <div className="flex max-w-3xl mx-auto space-x-4">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                        placeholder="Ask something..."
-                        className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <button
-                        onClick={sendMessage}
-                        disabled={loading}
-                        className="px-6 py-2 font-bold text-white transition duration-300 bg-indigo-600 rounded-full hover:bg-indigo-700 disabled:opacity-50"
-                    >
-                        Send
-                    </button>
+
+                <div className="chat-footer">
+                    <div className="footer-inner">
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                            placeholder="Type a message..."
+                            className="input-box"
+                        />
+
+                        <button
+                            onClick={sendMessage}
+                            disabled={loading}
+                            className="send-btn"
+                        >
+                            Send
+                        </button>
+                    </div>
                 </div>
+
             </div>
-        </div>
+        </>
     );
 };
 
