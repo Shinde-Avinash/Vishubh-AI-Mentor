@@ -1,4 +1,4 @@
-# CG Agent - AI Personality Chat Application
+# Vishubh-AI-Mentor - AI Personality Chat Application
 
 > A full-stack web application that lets you chat with AI personalities using Google Gemini API
 
